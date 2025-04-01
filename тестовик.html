@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+</head>
+<body>
+    <h1>WebSocket Client</h1>
+    <button id="sendGreeting">Send Greeting</button>
+    <button id="sendSum">Send Sum</button>
+    <div id="response"></div>
+
+    <script>
+        const socket = new WebSocket('ws://localhost:8765');
+        
+        // Слушаем события подключения
+        socket.onopen = () => {
+            console.log('Connected to WebSocket server');
+        };
+
+        // Слушаем ответы от сервера
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            document.getElementById('response').innerText = JSON.stringify(data);
+        };
+
+        socket.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
+
+        socket.onclose = () => {
+            console.log("WebSocket connection closed");
+        };
+
+        // Отправка запроса на сервер при нажатии на кнопку "Send Greeting"
+        document.getElementById('sendGreeting').onclick = () => {
+            const request = {
+                action: "greet",
+                name: "John Doe"
+            };
+            socket.send(JSON.stringify(request));
+        };
+
+        // Отправка запроса на сервер для вычисления суммы
+        document.getElementById('sendSum').onclick = () => {
+            const request = {
+                action: "sum",
+                a: 5,
+                b: 7
+            };
+            socket.send(JSON.stringify(request));
+        };
+    </script>
+</body>
+</html>
